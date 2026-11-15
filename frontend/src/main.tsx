@@ -23,7 +23,7 @@ import './interactions.css';
 
 type View='explore'|'history'|'harmonization'|'insights'|'news'|'method';
 
-const nav=[{id:'explore',label:'Fire explorer',icon:Globe2},{id:'history',label:'Historical record',icon:CalendarDays},{id:'harmonization',label:'Compare satellites',icon:GitMerge},{id:'insights',label:'Fire insights',icon:Lightbulb},{id:'news',label:'Current news',icon:Newspaper},{id:'method',label:'How it works',icon:BookOpen}] as const;
+const nav=[{id:'explore',label:'Fire explorer',icon:Globe2},{id:'history',label:'Historical record',icon:CalendarDays},{id:'harmonization',label:'Compare satellites',icon:GitMerge},{id:'insights',label:'Fire insights',icon:Lightbulb},{id:'method',label:'How it works',icon:BookOpen}] as const;
 const number=(n:number|null|undefined,digits=0)=>n===null||n===undefined?'—':n.toLocaleString('en-US',{maximumFractionDigits:digits});
 const humanDate=(s:string)=>new Date(s+'T00:00:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'});
 
