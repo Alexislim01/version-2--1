@@ -1,28 +1,24 @@
-import {useEffect,useState,type CSSProperties} from 'react';
-import {ChevronLeft,ChevronRight,Pause,Play,RotateCcw} from 'lucide-react';
+import {useMemo,useState,type CSSProperties} from 'react';
+import type {Observation} from './engine';
 import './map-timeline.css';
 
-type TimelineStep={key:string;label:string;detail:string};
-export default function MapTimeline({steps,selected,onSelect,onClear,scopeKey,unit}:{steps:TimelineStep[];selected:string|null;onSelect:(key:string)=>void;onClear?:()=>void;scopeKey:string;unit:string}){
- const [playing,setPlaying]=useState(false),[speed,setSpeed]=useState(1);
- const found=steps.findIndex(step=>step.key===selected),index=Math.max(0,found),current=steps[index],disabled=steps.length<2;
- useEffect(()=>setPlaying(false),[scopeKey]);
- useEffect(()=>{
-  if(!playing)return;
-  if(disabled||found<0||index===steps.length-1){setPlaying(false);return;}
-  const timer=setTimeout(()=>onSelect(steps[index+1].key),800/speed);
-  return()=>clearTimeout(timer);
- },[playing,speed,index,found,steps,onSelect,disabled]);
- function choose(next:number){setPlaying(false);if(steps[next])onSelect(steps[next].key);}
- function toggle(){if(playing){setPlaying(false);return;}if(disabled)return;if(found<0||index===steps.length-1)onSelect(steps[0].key);setPlaying(true);}
- return <section className="map-timeline" aria-label="Fire activity timeline">
-  <div className="timeline-heading"><div><strong>{found>=0?current.label:steps.length?'All selected dates':'No dates available'}</strong><span>{found>=0?current.detail:`${steps.length.toLocaleString('en-US')} ${unit} in selected range`}</span></div>{onClear&&<button type="button" className="timeline-reset" disabled={found<0} onClick={()=>{setPlaying(false);onClear();}}><RotateCcw size={12}/>All dates</button>}</div>
-  <div className="timeline-controls">
-   <button type="button" aria-label={`Previous ${unit==='months'?'month':'day'}`} disabled={!steps.length||index===0&&found>=0} onClick={()=>choose(found<0?0:index-1)}><ChevronLeft size={17}/></button>
-   <button type="button" className="timeline-play" aria-label={playing?'Pause timeline':'Play timeline'} disabled={disabled} onClick={toggle}>{playing?<Pause size={14}/>:<Play size={14}/>}<span>{playing?'Pause':'Play'}</span></button>
-   <button type="button" aria-label={`Next ${unit==='months'?'month':'day'}`} disabled={!steps.length||found>=0&&index===steps.length-1} onClick={()=>choose(found<0?0:index+1)}><ChevronRight size={17}/></button>
-   <div className="timeline-track"><input aria-label="Timeline position" aria-valuetext={current?.label||'No dates available'} type="range" min="0" max={Math.max(0,steps.length-1)} step="1" value={index} disabled={disabled} style={{'--timeline-progress':`${steps.length>1?index/(steps.length-1)*100:0}%`} as CSSProperties} onChange={event=>choose(+event.target.value)}/><div className="timeline-endpoints" aria-hidden="true"><span>{steps[0]?.label||'—'}</span><span>{steps.at(-1)?.label||'—'}</span></div></div>
-   <select aria-label="Playback speed" value={speed} onChange={event=>setSpeed(+event.target.value)}>{[.5,1,2,4].map(value=><option key={value} value={value}>{value}×</option>)}</select>
-  </div>
- </section>;
+export function detectionTime(point:Observation){
+ const time=point.acq_time.padStart(4,'0');
+ return `${point.acq_date}T${time.slice(0,2)}:${time.slice(2,4)}`;
+}
+export function useHotspotTimeline<T extends Observation>(points:T[],scopeKey:string){
+ const [enabled,setEnabled]=useState(false),[position,setPosition]=useState<{scope:string;time:string}|null>(null);
+ const times=useMemo(()=>[...new Set(points.map(detectionTime))].sort(),[points]);
+ const cutoff=position?.scope===scopeKey&&times.includes(position.time)?position.time:times[0];
+ const visible=useMemo(()=>enabled?points.filter(point=>cutoff&&detectionTime(point)<=cutoff):points,[points,enabled,cutoff]);
+ return {enabled,setEnabled,times,cutoff,visible,setCutoff:(time:string)=>setPosition({scope:scopeKey,time})};
+}
+type TimelineProps={enabled:boolean;setEnabled:(enabled:boolean)=>void;times:string[];cutoff:string|undefined;setCutoff:(time:string)=>void};
+const timeLabel=(time:string)=>time.replace('T',' ')+' UTC';
+export default function MapTimeline({enabled,setEnabled,times,cutoff,setCutoff}:TimelineProps){
+ const index=Math.max(0,times.indexOf(cutoff||''));
+ return <>
+  <label className="timeline-toggle"><input type="checkbox" checked={enabled} onChange={event=>setEnabled(event.target.checked)}/>Timeline</label>
+  {enabled&&<div className="map-timeline" role="region" aria-label="Hotspot detection timeline"><input type="range" aria-label="Hotspot detection time" aria-valuetext={cutoff?`Hotspots detected through ${timeLabel(cutoff)}`:'No hotspots in this selection'} title={cutoff?`Through ${timeLabel(cutoff)}`:'No hotspots in this selection'} min="0" max={Math.max(0,times.length-1)} step="1" value={index} disabled={times.length<2} style={{'--timeline-progress':`${times.length>1?index/(times.length-1)*100:0}%`} as CSSProperties} onChange={event=>setCutoff(times[+event.target.value])}/></div>}
+ </>;
 }
