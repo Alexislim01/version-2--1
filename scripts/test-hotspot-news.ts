@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {hotspotNewsUrl} from '../frontend/src/hotspot-news.ts';
+import {binHotspots} from '../frontend/src/map-detections.ts';
+const url=new URL(hotspotNewsUrl('Sabah & Sarawak','2026-11-15'));
+assert.equal(url.origin,'https://www.google.com');assert.equal(url.searchParams.get('tbm'),'nws');
+assert.match(url.searchParams.get('q')!,/"Sabah & Sarawak"/);assert.match(url.searchParams.get('q')!,/after:2026-11-12 before:2026-11-19/);
+assert.match(new URL(hotspotNewsUrl('Indonesia','2026-01-01')).searchParams.get('q')!,/after:2025-12-29 before:2026-01-05/);
+assert.throws(()=>hotspotNewsUrl('Test','2026-02-30'));assert.throws(()=>hotspotNewsUrl('Test','invalid'));
+assert.equal(new URL(hotspotNewsUrl('a"\nb','2026-11-15')).searchParams.get('q')!.includes('\n'),false);
+const base={latitude:2,longitude:112,acq_time:'1200',satellite:'Aqua',confidence:'90',frp:10,daynight:'D',brightness:300,instrument:'MODIS'};
+const bins=binHotspots([{...base,acq_date:'2026-11-15'},{...base,acq_date:'2026-11-12'}],.25,false,null);
+assert.equal(bins[0].firstDate,'2026-11-12');assert.equal(bins[0].lastDate,'2026-11-15');
+console.log('PASS: encoded news URL, UTC date window, invalid dates, input normalization, latest bin observation date');
