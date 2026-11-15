@@ -1,6 +1,7 @@
 import {useEffect,useMemo,useRef,useState,type CSSProperties} from 'react';
 import {CalendarDays,ChartNoAxesCombined,ChevronRight,Download,Flame,Globe2,Info,Layers,LoaderCircle,MapPin,RefreshCw,Share2,ShieldCheck,Upload,X} from 'lucide-react';
 import MapView from './MapView';
+import {sensorColors} from './map-detections';
 import MapTimeline, {useHotspotTimeline} from './MapTimeline';
 import {validShape,type Camera} from './selection';
 import {shapeBounds} from './geography';
@@ -67,7 +68,7 @@ export default function FinalWorkspace(){
     <div className="explorer-controls"><div className="explorer-heading"><Globe2 size={18}/><h1>Historical fire explorer</h1></div><div className="final-map-selection"><MapPin size={15}/><strong>{currentArea.label}</strong><span>·</span>{timeline.enabled?`Through ${timeline.cutoff?.replace('T',' ')||'—'} UTC`:monthName(selected)}</div><div className="final-provenance-note"><ShieldCheck size={14}/>{timeline.enabled?'Observed and simulated layers retain their provenance':selected<'2012-01'?'Synthetic VIIRS locations · simulation, not observations':selected==='2012-01'?'S-NPP starts 20 January · partial coverage':'Observed S-NPP record'}{layers.includes('modis')&&' · Aqua shown separately'}</div></div>
     <MapTimeline {...timeline}/>
     <div className="final-map-count"><strong>{fmt(visible.length)}</strong><span>visible points</span></div>
-    <div className="final-map-legend" aria-label="Point provenance legend"><span><i className="observed"/>Observed detections</span><span><i className="synthetic"/>Simulated detections</span><small>Display cells: 0.25°</small></div>
+    <div className="final-map-legend" aria-label="Point provenance legend"><span><i style={{background:sensorColors.MODIS}}/>MODIS</span><span><i style={{background:sensorColors.VIIRS}}/>VIIRS</span><span><i className="synthetic"/>Simulated</span>{grid&&<span><i style={{background:sensorColors.mixed}}/>Both sensors</span>}<small>Display cells: 0.25°</small></div>
     {!visible.length&&<div className="final-map-empty"><Info size={20}/><strong>No visible points for this selection</strong><p>{selected<'2012-01'?'Enable Synthetic VIIRS or Aqua MODIS.':'Enable observed S-NPP or Aqua MODIS.'} Coverage is limited to {manifest.country}.</p></div>}
    </div>
    <aside id="historical-analysis" className="analysis-sidebar final-sidebar" aria-label="Historical fire activity analysis" hidden={!open}>
