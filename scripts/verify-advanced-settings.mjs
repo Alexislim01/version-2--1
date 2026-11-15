@@ -3,6 +3,8 @@ import {options} from './browser-options.mjs';
 const browser=await chromium.launch(options);
 try {
  const page=await browser.newPage({viewport:{width:1920,height:900}});
+ // External satellite tiles are unrelated to these control/state checks.
+ await page.route('**/server.arcgisonline.com/**',route=>route.abort());
  await page.goto(process.env.BASE_URL||'http://127.0.0.1:5173');
  await page.getByRole('tab',{name:'Area summary',exact:true}).click();
  for(const viewport of [{width:1920,height:900},{width:1440,height:768},{width:390,height:844}]){
