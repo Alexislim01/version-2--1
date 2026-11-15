@@ -4,7 +4,7 @@ import type {CalendarMonth,FinalPoint} from './final-model';
 import {decodeFinal} from './final-model';
 export const deliveryCountries=[{country:'Malaysia',label:'Malaysia',iso:'MYS',bbox:[99,0,120,8]},{country:'Argentina',label:'Argentina',iso:'ARG',bbox:[-74,-56,-53,-21]},{country:'Canada',label:'Canada',iso:'CAN',bbox:[-141,41,-52,84]},{country:'India',label:'India',iso:'IND',bbox:[68,6,98,36]},{country:'United_States',label:'United States',iso:'USA',bbox:[170,18,-66,72]}];
 export type CompactRow=(string|number|boolean|null)[];
-export type DeliveryManifest={country:string;label:string;iso:string;bbox:number[];start:string;end:string;months:Record<string,{url:string;counts:{modis:number;viirs:number};grid?:string}>;calendar:CalendarMonth[];screen:{screen_pass:boolean;seeds:{seed:number;mean_wape:number;worst_year_wape:number}[];screen_years:number[];note?:string};sources:{file:string;url:string;sha256:string;sensor:string;product:string;start:string;end:string;country:string}[];downloads:{name:string;url:string;sha256:string}[];cleaning:string};
+export type DeliveryManifest={country:string;label:string;iso:string;bbox:number[];start:string;end:string;months:Record<string,{url:string;counts:{modis:number;viirs:number};grid?:string;synthetic?:{url:string;count:number}}>;calendar:CalendarMonth[];screen:{screen_pass:boolean;seeds:{seed:number;mean_wape:number;worst_year_wape:number}[];screen_years:number[];note?:string};sources:{file:string;url:string;sha256:string;sensor:string;product:string;start:string;end:string;country:string}[];downloads:{name:string;url:string;sha256:string}[];cleaning:string};
 export type EstimatedCell={latitude:number;longitude:number;value:number;daynight:string;modis:number};
 export const deliveryBase=(country:string)=>import.meta.env.BASE_URL+'data/delivery/'+country+'/';
 export async function deliveryJSON<T>(url:string,signal?:AbortSignal):Promise<T>{
@@ -14,9 +14,10 @@ export async function deliveryJSON<T>(url:string,signal?:AbortSignal):Promise<T>
  return JSON.parse(text) as T;
 }
 export const loadDeliveryManifest=(country:string,signal?:AbortSignal)=>deliveryJSON<DeliveryManifest>(deliveryBase(country)+'manifest.json',signal);
-export async function loadDeliveryPoints(manifest:DeliveryManifest,months:string[],signal?:AbortSignal){
+/** includeSynthetic: also load the 2003-2011 point-level synthetic VIIRS shards (flagged is_synthetic). */
+export async function loadDeliveryPoints(manifest:DeliveryManifest,months:string[],signal?:AbortSignal,includeSynthetic=false){
  const chunks:FinalPoint[][]=new Array(months.length);let next=0;
- await Promise.all(Array.from({length:Math.min(3,months.length)},async()=>{while(next<months.length){const index=next++,entry=manifest.months[months[index]];if(!entry){chunks[index]=[];continue;}const block=await deliveryJSON<{modis:CompactRow[];viirs:CompactRow[]}>(deliveryBase(manifest.country)+entry.url,signal);if(block.modis.length!==entry.counts.modis||block.viirs.length!==entry.counts.viirs)throw Error('Incomplete observation shard. Please retry.');chunks[index]=[...decodeFinal(block.modis,'modis'),...decodeFinal(block.viirs,'viirs')];}}));
+ await Promise.all(Array.from({length:Math.min(3,months.length)},async()=>{while(next<months.length){const index=next++,entry=manifest.months[months[index]];if(!entry){chunks[index]=[];continue;}const block=await deliveryJSON<{modis:CompactRow[];viirs:CompactRow[]}>(deliveryBase(manifest.country)+entry.url,signal);if(block.modis.length!==entry.counts.modis||block.viirs.length!==entry.counts.viirs)throw Error('Incomplete observation shard. Please retry.');chunks[index]=[...decodeFinal(block.modis,'modis'),...decodeFinal(block.viirs,'viirs')];if(includeSynthetic&&entry.synthetic){const sim=await deliveryJSON<CompactRow[]>(deliveryBase(manifest.country)+entry.synthetic.url,signal);if(sim.length!==entry.synthetic.count)throw Error('Incomplete synthetic shard. Please retry.');chunks[index].push(...decodeFinal(sim,'synthetic'));}}}));
  return chunks.flat();
 }
 export async function loadDeliveryDataset(country:string,dates:DateInterval[],signal?:AbortSignal):Promise<Dataset>{
