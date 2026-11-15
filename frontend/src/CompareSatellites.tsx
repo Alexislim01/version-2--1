@@ -1,0 +1,43 @@
+import {useId,useState} from 'react';
+import {ArrowUpRight,CalendarDays,ChartNoAxesCombined,CircleAlert,GitMerge,Satellite} from 'lucide-react';
+import Chart from './Chart';
+import type {Analysis} from './engine';
+
+const number=(value:number|null|undefined,digits=2)=>value==null?'—':value.toLocaleString('en-GB',{maximumFractionDigits:digits});
+const signed=(value:number|null|undefined,digits=2)=>value==null?'—':(value>0?'+':'')+number(value,digits);
+
+export default function CompareSatellites({analysis:a,onMethod}:{analysis:Analysis;onMethod:()=>void}){
+ const [metric,setMetric]=useState<'count'|'frp'>('count'),clipId=useId();
+ const fit=metric==='count'?a.fit:a.frpFit,unit=metric==='count'?'pixels / day':'MW (daily totals)',scatterUnit=metric==='count'?'unique pixels / day':'FRP (MW)';
+ const paired=a.days.map(day=>({date:day.date,modis:metric==='count'?day.modis:day.raw_modis_frp,viirs:metric==='count'?day.viirs:day.raw_viirs_frp})).filter((day):day is {date:string;modis:number;viirs:number}=>day.modis!==null&&day.viirs!==null&&(day.modis>0||day.viirs>0));
+ const rawMax=Math.max(1,...paired.map(day=>Math.max(day.modis,day.viirs))),power=10**Math.floor(Math.log10(rawMax)),max=Math.ceil(rawMax/power)*power;
+ const x=(value:number)=>70+value/max*400,y=(value:number)=>265-value/max*225;
+ const parameters=fit.available?[
+  {name:'Slope (multiplication factor)',help:'Multiply the VIIRS value by this number.',value:number(fit.slope,3),unit:'×'},
+  {name:'Intercept (offset)',help:'Add this after multiplying. Negative predictions are clipped at zero.',value:signed(fit.intercept,3),unit},
+  {name:'RMSE (root mean square error)',help:'Typical prediction error; lower values indicate a closer fit.',value:number(fit.rmse,2),unit},
+  {name:'Residual spread',help:'1.96 × residual standard deviation; descriptive only.',value:'± '+number(fit.spread,2),unit},
+  {name:'Month-specific fits',help:'Other months use the area-wide fallback.',value:String(Object.values(a.monthly).filter(month=>month[metric].scope==='month'&&month[metric].available).length)+' / 12',unit:'months'},
+ ]:[];
+ return <div className="satellite-comparison">
+  <div className="method-intro-card"><span className="large-icon"><GitMerge size={28}/></span><div><h2>Compare the sensors on a common scale</h2><p>VIIRS detects smaller fires than MODIS. The adjusted record expresses the combined activity on the MODIS scale. Each series keeps a distinct colour and line style.</p></div><button className="secondary-button" onClick={onMethod}>Read the method<ArrowUpRight size={15}/></button></div>
+  <div className="comparison-metric-controls"><div><strong>Measurement</strong><p>The graph, fit parameters and monthly table update together.</p></div><div className="segmented" role="group" aria-label="Comparison measurement"><button aria-pressed={metric==='count'} onClick={()=>setMetric('count')}>Count</button><button aria-pressed={metric==='frp'} onClick={()=>setMetric('frp')}>FRP</button></div></div>
+  <div className="stats-grid comparison-stats">{[
+   {label:'Calibration R²',value:fit.available?number(fit.r2,3):'—',unit:'in-sample fit',help:'Fit quality on the overlap data; 1 is a perfect fit.',Icon:GitMerge},
+   {label:'Raw sensor bias',value:fit.available?signed(fit.raw_bias):'—',unit,help:'VIIRS minus MODIS, before adjustment.',Icon:Satellite},
+   {label:'Adjusted bias',value:fit.available?signed(fit.bias):'—',unit,help:'Adjusted VIIRS minus MODIS. Closer to zero is better.',Icon:ChartNoAxesCombined},
+   {label:'Overlap days',value:number(fit.n,0),unit:'informative days',help:'Both sensors available; at least one detected activity.',Icon:CalendarDays},
+  ].map(stat=><section className="stat" key={stat.label}><div className="stat-label">{stat.label}<stat.Icon size={17}/></div><div className="stat-value">{stat.value}<span>{stat.unit}</span></div><p>{stat.help}</p></section>)}</div>
+  <Chart days={a.days} expanded metric={metric}/>
+  <div className="bottom-grid calibration-grid"><section className="panel scatter-panel"><div className="panel-heading"><div><h2>Where the sensors agree</h2><p>Each blue point is one overlap day. Both axes show {metric==='count'?'raw unique pixels':'raw fire radiative power'}.</p></div></div>
+   <div className="scatter-legend"><span><i className="scatter-points-key"/>Daily sensor pairs</span><span><i className="scatter-fit-key"/>Fitted adjustment</span><span><i className="scatter-reference-key"/>1:1 reference</span></div>
+   <svg viewBox="0 0 500 325" role="img" aria-label={`Raw VIIRS versus MODIS scatter plot, ${metric==='count'?'counts':'FRP'}`}><defs><clipPath id={clipId}><rect x="70" y="40" width="400" height="225"/></clipPath></defs><rect x="70" y="40" width="400" height="225" fill="var(--chart-plot)"/>
+    {Array.from({length:5},(_,i)=>{const value=max*i/4;return <g key={i}><line x1="70" x2="470" y1={y(value)} y2={y(value)} stroke="var(--chart-grid)" strokeDasharray="3 5"/><text x="59" y={y(value)+4} textAnchor="end" fill="var(--text)" fontSize="12">{number(value,0)}</text><text x={x(value)} y="286" textAnchor="middle" fill="var(--text)" fontSize="12">{number(value,0)}</text></g>;})}
+    <g clipPath={`url(#${clipId})`}><line x1="70" y1="265" x2="470" y2="40" stroke="var(--series-viirs)" strokeWidth="2" strokeDasharray="8 5"/>{paired.map(day=><circle key={day.date} cx={x(day.viirs)} cy={y(day.modis)} r="2.6" fill="var(--series-modis)" opacity=".65"><title>{day.date}: VIIRS {number(day.viirs)}, MODIS {number(day.modis)} {metric==='frp'?'MW':'pixels'}</title></circle>)}{fit.available&&<path d={`M${x(0)},${y(fit.intercept!)} L${x(max)},${y(fit.slope!*max+fit.intercept!)}`} stroke="var(--series-harmonized)" strokeWidth="3" fill="none"/>}</g>
+    <text x="270" y="315" fill="var(--text)" fontSize="13" textAnchor="middle">Raw VIIRS · {scatterUnit}</text><text x="17" y="153" fill="var(--text)" fontSize="13" transform="rotate(-90 17 153)" textAnchor="middle">Raw MODIS · {scatterUnit}</text>
+   </svg><p className="scatter-note">Points near the dashed 1:1 line have similar raw values. The purple line shows the area-wide fitted conversion.</p></section>
+   <section className="panel fit-panel"><div className="panel-heading"><div><h2>Adjustment parameters</h2><p>{metric==='count'?'Detection count':'Fire radiative power'} · Theil–Sen regression</p></div></div>{fit.available?<><div className="formula"><span>Adjusted VIIRS on the MODIS scale</span><strong>{number(fit.slope,3)} <small>× VIIRS</small> {fit.intercept!>=0?'+':'−'} {number(Math.abs(fit.intercept!),3)}</strong><span>Area-wide reference. Supported months use their own fit.</span></div><dl className="comparison-parameters">{parameters.map(parameter=><div key={parameter.name}><dt>{parameter.name}<small>{parameter.help}</small></dt><dd><strong>{parameter.value}</strong><span>{parameter.unit}</span></dd></div>)}</dl><div className="modal-note"><CircleAlert size={16}/>Calibration uses the same overlap observations. Residual shading is descriptive and is not a validated confidence interval.</div></>:<div className="mini-empty"><GitMerge size={28}/><strong>Insufficient overlap for a fit</strong><p>Include both sensors and at least 20 informative overlap days with three different VIIRS values.</p></div>}</section>
+  </div>
+  <section className="panel monthly-fits"><div className="panel-heading"><div><h2>Monthly calibration parameters</h2><p>{metric==='count'?'Detection count':'FRP'} fits. Bias, intercept and RMSE use {unit}. Slope is a multiplier.</p></div></div><div className="table-scroll comparison-parameter-table" tabIndex={0} role="region" aria-label="Monthly calibration parameters"><table><thead><tr><th scope="col">Month</th><th scope="col">Fit used</th><th scope="col">Overlap days</th><th scope="col">Slope (×)</th><th scope="col">Intercept</th><th scope="col">R²</th><th scope="col">Adjusted bias</th><th scope="col">RMSE</th></tr></thead><tbody>{Object.entries(a.monthly).map(([month,values])=>{const f=values[metric];return <tr key={month}><th scope="row">{new Date(Date.UTC(2000,+month-1,1)).toLocaleDateString('en',{month:'long',timeZone:'UTC'})}</th><td><span className={'fit-scope '+(f.scope==='month'?'local':'fallback')}>{f.available?(f.scope==='month'?'Month-specific':'Area fallback'):'Unavailable'}</span></td><td>{number(f.n,0)}</td><td>{number(f.slope,3)}</td><td>{signed(f.intercept,3)}</td><td>{number(f.r2,3)}</td><td>{signed(f.bias,3)}</td><td>{number(f.rmse,3)}</td></tr>;})}</tbody></table></div><p className="parameter-table-note">R² measures fit quality. Bias is the average signed error; RMSE measures the magnitude of the error. Area fallback uses the shared fit when a month has too little overlap.</p></section>
+ </div>;
+}

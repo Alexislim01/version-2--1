@@ -1,0 +1,1 @@
+"""Transparent, reproducible FIRMS processing."""

@@ -1,0 +1,5 @@
+# Keep source data and downloadable artifacts byte-identical to their checksums.
+*.csv -text
+FINAL/** -text
+frontend/public/data/** -text
+frontend/public/news/** -text

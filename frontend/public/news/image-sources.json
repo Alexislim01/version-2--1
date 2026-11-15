@@ -1,0 +1,32 @@
+[
+  {
+    "id": "indonesia",
+    "source": "https://science.nasa.gov/missions/aqua/peatland-fires-darken-skies-in-indonesia/",
+    "image": "https://assets.science.nasa.gov/content/dam/science/esd/eo/images/iotd/2026/peatland-fires-darken-skies-in-indonesia/indonesiafires_amo_20260901_th.jpg/jcr:content/renditions/cq5dam.web.1280.1280.jpeg",
+    "bytes": 315416
+  },
+  {
+    "id": "amazon",
+    "source": "https://science.nasa.gov/earth/earth-observatory/fires-arrive-in-the-amazon-rainforest/",
+    "image": "https://assets.science.nasa.gov/content/dam/science/esd/eo/images/iotd/2026/fires-arrive-in-the-amazon-rainforest/amazofires_amo_20261012_th.jpg/jcr:content/renditions/cq5dam.web.1280.1280.jpeg",
+    "bytes": 440703
+  },
+  {
+    "id": "ontario",
+    "source": "https://science.nasa.gov/earth/earth-observatory/ontario-wildfire-smoke-moves-east/",
+    "image": "https://assets.science.nasa.gov/content/dam/science/esd/eo/images/iotd/2026/ontario-wildfire-smoke-drifts-east/ontariofires_virs3_20260714_th.jpg/jcr:content/renditions/cq5dam.web.1280.1280.jpeg",
+    "bytes": 125741
+  },
+  {
+    "id": "inspyre",
+    "source": "https://science.nasa.gov/earth/natural-disasters/wildfires/nasa-campaign-explores-clouds-spawned-by-wildfires/",
+    "image": "https://science.nasa.gov/wp-content/uploads/2026/10/20260806-flight-widemouth-bernadett-weinzierl2-1.jpg",
+    "bytes": 316098
+  },
+  {
+    "id": "pace",
+    "source": "https://science.nasa.gov/earth/nasas-pace-mission-studies-smoke-fires/",
+    "image": "https://assets.science.nasa.gov/content/dam/science/esd/articles/2026/4x3_Landscape_smoke_PACE_OCI_20250531T180736_181236.png/jcr:content/renditions/cq5dam.web.1280.1280.png",
+    "bytes": 2263233
+  }
+]

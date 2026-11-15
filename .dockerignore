@@ -1,0 +1,13 @@
+node_modules
+.venv
+.git
+.env
+dist
+artifacts
+data/raw
+data/parquet
+.sites-runtime
+*.zip
+!frontend/public/data/final/files/source/harmonization-source.zip
+FINAL/code/work
+FINAL/code/output

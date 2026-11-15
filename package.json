@@ -1,0 +1,41 @@
+{
+  "name": "fireatlas",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --configLoader native",
+    "build": "tsc --noEmit && vite build --configLoader native",
+    "preview": "vite preview --host 127.0.0.1 --configLoader native",
+    "test": "python -m unittest discover -s tests -v",
+    "test:ui": "node scripts/verify.mjs",
+    "test:selection": "node --experimental-strip-types scripts/test-selection.ts",
+    "test:final": "node --experimental-strip-types scripts/test-final-model.ts",
+    "test:final-ui": "node scripts/verify-final.mjs",
+    "test:comparison": "node scripts/verify-comparison.mjs",
+    "test:news": "node scripts/verify-news.mjs",
+    "test:interactions": "node scripts/verify-interactions.mjs",
+    "test:globe": "node scripts/verify-globe-details.mjs",
+    "test:popovers": "node scripts/verify-popovers.mjs"
+  },
+  "dependencies": {
+    "@fontsource/dm-sans": "^5.2.0",
+    "@fontsource/space-grotesk": "^5.2.0",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^0.468.0",
+    "maplibre-gl": "^5.24.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.56.0",
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/leaflet": "^1.9.21",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.0"
+  }
+}

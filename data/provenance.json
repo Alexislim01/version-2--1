@@ -1,0 +1,159 @@
+{
+  "title": "NASA FIRMS \u00b7 Malaysia archive",
+  "start": "2019-01-01",
+  "end": "2023-12-31",
+  "coverage": [
+    {
+      "sensor": "MODIS",
+      "product": "modis",
+      "start": "2019-01-01",
+      "end": "2019-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis_2019_Malaysia.csv",
+      "sha256": "62d8a1482f196633f6d497ca3abb5e3c06714f28642d5d636b96cccd319d3948",
+      "records": 4735
+    },
+    {
+      "sensor": "MODIS",
+      "product": "modis",
+      "start": "2020-01-01",
+      "end": "2020-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis_2020_Malaysia.csv",
+      "sha256": "d757b003e735680f274e828966268a67f408d3ba184976c378f8552d960417a6",
+      "records": 2672
+    },
+    {
+      "sensor": "MODIS",
+      "product": "modis",
+      "start": "2021-01-01",
+      "end": "2021-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis_2021_Malaysia.csv",
+      "sha256": "8c595caf80c905c93058d9958fc1fcf8b2bfa480fce5024796c13c732be52897",
+      "records": 2314
+    },
+    {
+      "sensor": "MODIS",
+      "product": "modis",
+      "start": "2022-01-01",
+      "end": "2022-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis_2022_Malaysia.csv",
+      "sha256": "821d4b7ca5d1f1fd4a1222d77fc95eed4f6032a2e2dfd05cdc5527c6a9837e48",
+      "records": 1444
+    },
+    {
+      "sensor": "MODIS",
+      "product": "modis",
+      "start": "2023-01-01",
+      "end": "2023-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis_2023_Malaysia.csv",
+      "sha256": "0bbe7b2a75a4cdfd628d8daf3432b6a44505c24b66f6acf5b7360c2f9c396dbc",
+      "records": 2310
+    },
+    {
+      "sensor": "VIIRS",
+      "product": "viirs-snpp",
+      "start": "2019-01-01",
+      "end": "2019-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp_2019_Malaysia.csv",
+      "sha256": "0de961d53786bafa9efa7c379c528deb7c3ebe58e7429ce660d2ee3c2532c3f3",
+      "records": 20364
+    },
+    {
+      "sensor": "VIIRS",
+      "product": "viirs-snpp",
+      "start": "2020-01-01",
+      "end": "2020-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp_2020_Malaysia.csv",
+      "sha256": "64881518375a400b6fb15026246e899006e9f8faa5b48faca472158b41505a2f",
+      "records": 9552
+    },
+    {
+      "sensor": "VIIRS",
+      "product": "viirs-snpp",
+      "start": "2021-01-01",
+      "end": "2021-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp_2021_Malaysia.csv",
+      "sha256": "27c6d77959f823cdcc09b59013effdb48b6fb5cda88e1227e78e4c864eb16b7c",
+      "records": 8590
+    },
+    {
+      "sensor": "VIIRS",
+      "product": "viirs-snpp",
+      "start": "2022-01-01",
+      "end": "2022-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp_2022_Malaysia.csv",
+      "sha256": "dc25298dc2490d657648e8a38450cd690483d63d3fb7bc64f79f0343eb133097",
+      "records": 5275
+    },
+    {
+      "sensor": "VIIRS",
+      "product": "viirs-snpp",
+      "start": "2023-01-01",
+      "end": "2023-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp_2023_Malaysia.csv",
+      "sha256": "912a15a654cbe3cd3d0384db231b00a2c918ffa911fec4f4c2adcf3032761b00",
+      "records": 8268
+    },
+    {
+      "sensor": "VIIRS",
+      "product": "viirs-jpss1",
+      "start": "2019-01-01",
+      "end": "2019-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1_2019_Malaysia.csv",
+      "sha256": "3aa209f17d06f587d32efde98ca7b96db094fb6df4c17c780e96d93706622b9d",
+      "records": 20768
+    },
+    {
+      "sensor": "VIIRS",
+      "product": "viirs-jpss1",
+      "start": "2020-01-01",
+      "end": "2020-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1_2020_Malaysia.csv",
+      "sha256": "ff88997984877892836428591fd4954fe61f4dd02408df31bf7003d18629a327",
+      "records": 9544
+    },
+    {
+      "sensor": "VIIRS",
+      "product": "viirs-jpss1",
+      "start": "2021-01-01",
+      "end": "2021-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1_2021_Malaysia.csv",
+      "sha256": "8feb498cc82cfe4be9bf2cdfd0cd9f2c66dbefbdeee75070371f8bf7d308184a",
+      "records": 8794
+    },
+    {
+      "sensor": "VIIRS",
+      "product": "viirs-jpss1",
+      "start": "2022-01-01",
+      "end": "2022-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1_2022_Malaysia.csv",
+      "sha256": "e62c78221f2f9ef4d9fdccfabbd956d1d8c722af7e2ef34bc93211c07e53da48",
+      "records": 5710
+    },
+    {
+      "sensor": "VIIRS",
+      "product": "viirs-jpss1",
+      "start": "2023-01-01",
+      "end": "2023-12-31",
+      "country": "Malaysia",
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1_2023_Malaysia.csv",
+      "sha256": "feaa2ebeb30b4aa6041a3507444705f7957594c335e83dad8846bafc78e18909",
+      "records": 8600
+    }
+  ],
+  "country": "Malaysia",
+  "note": "Complete country archive files. Borneo and Southeast Asia views contain Malaysian territory only; other countries are not covered."
+}

@@ -1,0 +1,4 @@
+import type {Shape} from './engine.ts';
+export type Country={type:'Feature';properties:{id:string;name:string;continent:string};geometry:Shape};
+export function shapeBounds(shape:Shape):number[]{const points=(shape.type==='Polygon'?shape.coordinates.flat():shape.coordinates.flat(2)) as number[][];const xs=[...new Set(points.map(p=>p[0]))].sort((a,b)=>a-b);let gap=-1,index=0;for(let i=0;i<xs.length;i++){const distance=(i===xs.length-1?xs[0]+360:xs[i+1])-xs[i];if(distance>gap){gap=distance;index=i;}}let south=90,north=-90;for(const p of points){south=Math.min(south,p[1]);north=Math.max(north,p[1]);}return [xs[(index+1)%xs.length],south,xs[index],north];}
+export const areaGeometry=(countries:Country[]):Shape=>({type:'MultiPolygon',coordinates:countries.flatMap(c=>c.geometry.type==='Polygon'?[c.geometry.coordinates]:c.geometry.coordinates) as number[][][][]});

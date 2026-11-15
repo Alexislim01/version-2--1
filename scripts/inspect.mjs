@@ -1,0 +1,15 @@
+import { chromium } from '@playwright/test';
+import { mkdir } from 'node:fs/promises';
+await mkdir('artifacts',{recursive:true});
+const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH||'C:/Users/angel/AppData/Local/ms-playwright/chromium-1248/chrome-win64/chrome.exe'});
+const page=await browser.newPage({viewport:{width:1440,height:1100},deviceScaleFactor:1});
+const errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.goto('http://127.0.0.1:5178/');
+await page.getByRole('heading',{name:'Burning activity calendar'}).waitFor({timeout:60000});
+await page.locator('.leaflet-overlay-pane svg path').first().waitFor({timeout:15000}).catch(()=>{});
+await page.screenshot({path:'artifacts/desktop.png',fullPage:true});
+console.log(JSON.stringify({errors,stats:await page.locator('.stats-grid').innerText(),overflow:await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)}));
+await page.setViewportSize({width:390,height:844});
+await page.screenshot({path:'artifacts/mobile.png',fullPage:true});
+console.log('Mobile overflow',await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth));
+await browser.close();

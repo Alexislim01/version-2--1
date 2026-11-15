@@ -1,0 +1,11 @@
+services:
+  fireatlas:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      FIRMS_MAP_KEY: ${FIRMS_MAP_KEY:-}
+    volumes:
+      - ./data/parquet:/app/data/parquet
+      - ./data/raw:/app/data/raw
+    restart: unless-stopped
