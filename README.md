@@ -1,5 +1,9 @@
 # FireAtlas
 
+**🌐 Live website: https://alexislim01.github.io/version-2--1/**
+
+NASA Space Apps 2026 · MODIS → VIIRS hotspot harmonization. Data, code and results: [`DELIVERY/`](DELIVERY/).
+
 A local MODIS / VIIRS fire-analysis website for exploring real NASA FIRMS observations. Built from the supplied harmonization brief using React, Vite, TypeScript, Tailwind, MapLibre GL JS, FastAPI, pandas, DuckDB, and Parquet.
 
 ## Run the complete system
