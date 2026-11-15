@@ -1,6 +1,7 @@
 import {useEffect,useMemo,useRef,useState,type CSSProperties} from 'react';
 import {CalendarDays,ChartNoAxesCombined,ChevronRight,Download,Flame,Globe2,Info,Layers,LoaderCircle,MapPin,RefreshCw,Share2,ShieldCheck,Upload,X} from 'lucide-react';
 import MapView from './MapView';
+import MapTimeline from './MapTimeline';
 import {validShape,type Camera} from './selection';
 import {shapeBounds} from './geography';
 import type {Shape} from './engine';
@@ -62,6 +63,7 @@ export default function FinalWorkspace(){
    <div className="explorer-map final-map"><button className="analysis-toggle" type="button" aria-controls="historical-analysis" aria-expanded={open} aria-label={open?'Tap to close historical sidebar':'Tap to open historical sidebar'} onClick={()=>setOpen(v=>!v)}><ChevronRight size={30} aria-hidden="true"/><span>{open?'tap to close':'tap to open'}</span></button>
     <MapView bbox={currentArea.bbox} shape={currentArea.shape} hotspots={visible} grid={.25} selectedDate={null} onShape={(shape,bbox)=>chooseArea({id:'custom',label:'Drawn area',shape,bbox})} name={currentArea.label} camera={camera.current} onCamera={c=>{camera.current=c;}} basemap={basemap} onBasemap={setBasemap} showGrid={grid} onGrid={setGrid} custom={area.id==='custom'} onExit={()=>chooseArea(nationalArea)} shared={false} navigationRevision={revision}/>
     <div className="explorer-controls"><div className="explorer-heading"><Globe2 size={18}/><h1>Historical fire explorer</h1></div><div className="final-map-selection"><MapPin size={15}/><strong>{currentArea.label}</strong><span>·</span>{monthName(selected)}</div><div className="final-provenance-note"><ShieldCheck size={14}/>{selected<'2012-01'?'Synthetic VIIRS locations · simulation, not observations':selected==='2012-01'?'S-NPP starts 20 January · partial coverage':'Observed S-NPP record'}{layers.includes('modis')&&' · Aqua shown separately'}</div></div>
+    <MapTimeline steps={filtered.map(row=>({key:monthKey(row.year,row.month),label:monthName(monthKey(row.year,row.month)),detail:sourceName(row.source)}))} selected={selected} onSelect={setSelected} scopeKey={JSON.stringify([base,area,from,to,daynight,layers,simSource,tab])} unit="months"/>
     <div className="final-map-count"><strong>{fmt(visible.length)}</strong><span>visible points</span></div>
     <div className="final-map-legend" aria-label="Point provenance legend"><span><i className="observed"/>Observed detections</span><span><i className="synthetic"/>Simulated detections</span><small>Display cells: 0.25°</small></div>
     {!visible.length&&<div className="final-map-empty"><Info size={20}/><strong>No visible points for this selection</strong><p>{selected<'2012-01'?'Enable Synthetic VIIRS or Aqua MODIS.':'Enable observed S-NPP or Aqua MODIS.'} Coverage is limited to {manifest.country}.</p></div>}

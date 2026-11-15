@@ -6,6 +6,7 @@ import '@fontsource/dm-sans/400.css';import '@fontsource/dm-sans/500.css';import
 import '@fontsource/space-grotesk/400.css';import '@fontsource/space-grotesk/500.css';import '@fontsource/space-grotesk/600.css';import '@fontsource/space-grotesk/700.css';
 import { analyze, decode, parseCSV, presets, type Analysis, type Coverage, type Dataset, type Observation, type Shape } from './engine';
 import AdvancedSettings from './AdvancedSettings';
+import MapTimeline from './MapTimeline';
 import AreaPicker from './AreaPicker';import DatePicker from './DatePicker';import FilterControls from './FilterControls';
 import {defaultFilters,readSharedState,readCamera,shareParams,importScopeKey,assertImportConfirmed,dateSummary,dateSelected,validDate,validShape,type Filters,type Camera} from './selection';
 import {shapeBounds,areaGeometry,type Country} from './geography';
@@ -138,6 +139,7 @@ function App(){
           <div className="explorer-quick-actions"><button onClick={share}><Share2 size={15}/><span>Share view</span></button><button onClick={()=>setModal('data')}><Upload size={15}/><span>Import data</span></button></div>
           <div className="map-advanced"><label className="advanced-toggle"><input type="checkbox" checked={advanced} onChange={e=>setAdvanced(e.target.checked)}/>Advanced settings</label>{advanced&&<AdvancedSettings value={filters} onApply={next=>{apply(next);setAdvanced(false);}}/>}</div>
           {new URLSearchParams(location.search).get('sessionImports')==='true'&&!extraCoverage.length&&<div className="session-import-note" role="status">This shared view used browser-session imports. Import those CSVs here to restore its data; the link contains no observations.</div>}
+          <MapTimeline steps={analysis.days.map(day=>({key:day.date,label:humanDate(day.date)+' '+day.date.slice(0,4),detail:day.harmonized_count===null?'Missing coverage':`${number(day.detections)} satellite detections`}))} selected={selectedDate} onSelect={setSelectedDate} onClear={()=>setSelectedDate(null)} scopeKey={JSON.stringify(filters)} unit="days"/>
           {selectedDate&&<div className="map-day-selection"><CalendarDays size={15}/><span>Showing <strong>{humanDate(selectedDate)} {selectedDate.slice(0,4)}</strong></span><button aria-label="Show all dates" onClick={()=>setSelectedDate(null)}><X size={16}/></button></div>}
           {!analysis.hotspots.length&&<div className="map-empty-state" style={{pointerEvents:'none'}}><Database size={30}/><h2>No enabled observations in this view</h2><p>{known.length?'No detections match the applied filters.':'Coverage is missing or partial for this selection.'} Bundled data covers Malaysian territory, 2019–2023. Import NASA FIRMS data for {name}.</p><div style={{pointerEvents:'auto'}}><button className="secondary-button" onClick={()=>setPopover('area')}>Change location or dates</button><button className="primary-button" onClick={()=>setModal('data')}>Import data</button></div></div>}
           </div>
