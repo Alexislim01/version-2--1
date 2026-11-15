@@ -1,6 +1,7 @@
 import {useEffect,useMemo,useRef,useState,type CSSProperties} from 'react';
 import {CalendarDays,ChartNoAxesCombined,ChevronRight,Download,Flame,Globe2,Info,Layers,LoaderCircle,MapPin,RefreshCw,Share2,ShieldCheck,Upload,X} from 'lucide-react';
 import MapView from './MapView';
+import ForecastPanel from './ForecastPanel';
 import {sensorColors} from './map-detections';
 import MapTimeline, {useHotspotTimeline} from './MapTimeline';
 import {validShape,type Camera} from './selection';
@@ -11,9 +12,9 @@ import {FinalDownloads,MethodReport,SimulationReport,ValidationReport} from './F
 import FinalPipeline from './FinalPipeline';
 import './final.css';
 
-type Tab='map'|'validation'|'simulation'|'pipeline'|'method'|'downloads';
+type Tab='map'|'forecast'|'validation'|'simulation'|'pipeline'|'method'|'downloads';
 type Metric='count'|'anomaly'|'frp';
-const tabs:{id:Tab;label:string}[]=[{id:'map',label:'Calendar & map'},{id:'validation',label:'Accuracy'},{id:'simulation',label:'Simulation'},{id:'pipeline',label:'Run pipeline'},{id:'method',label:'Method'},{id:'downloads',label:'Downloads'}];
+const tabs:{id:Tab;label:string}[]=[{id:'map',label:'Calendar & map'},{id:'validation',label:'Accuracy'},{id:'simulation',label:'Simulation'},{id:'pipeline',label:'Run pipeline'},{id:'method',label:'Method'},{id:'downloads',label:'Downloads'},{id:'forecast',label:'Next-day forecast'}];
 const q=()=>new URLSearchParams(location.search);
 const validMonth=(key:string|null)=>!!key&&/^20(0[3-9]|1\d|20)-(0[1-9]|1[0-2])$/.test(key);
 const yearParam=(key:string,fallback:number)=>{const value=Number(q().get(key));return Number.isInteger(value)&&value>=2003&&value<=2020?value:fallback;};
@@ -65,7 +66,7 @@ export default function FinalWorkspace(){
   {tab==='map'?<div className={`final-explorer${open?'':' analysis-collapsed'}`}>
    <div className="explorer-map final-map"><button className="analysis-toggle" type="button" aria-controls="historical-analysis" aria-expanded={open} aria-label={open?'Tap to close historical sidebar':'Tap to open historical sidebar'} onClick={()=>setOpen(v=>!v)}><ChevronRight size={30} aria-hidden="true"/><span>{open?'tap to close':'tap to open'}</span></button>
     <MapView bbox={currentArea.bbox} shape={currentArea.shape} hotspots={visible} grid={.25} selectedDate={null} onShape={(shape,bbox)=>chooseArea({id:'custom',label:'Drawn area',shape,bbox})} name={currentArea.label} camera={camera.current} onCamera={c=>{camera.current=c;}} basemap={basemap} onBasemap={setBasemap} showGrid={grid} onGrid={setGrid} custom={area.id==='custom'} onExit={()=>chooseArea(nationalArea)} shared={false} navigationRevision={revision}/>
-    <div className="explorer-controls"><div className="explorer-heading"><Globe2 size={18}/><h1>Historical fire explorer</h1></div><div className="final-map-selection"><MapPin size={15}/><strong>{currentArea.label}</strong><span>·</span>{timeline.enabled?`Through ${timeline.cutoff?.replace('T',' ')||'—'} UTC`:monthName(selected)}</div><div className="final-provenance-note"><ShieldCheck size={14}/>{timeline.enabled?'Observed and simulated layers retain their provenance':selected<'2012-01'?'Synthetic VIIRS locations · simulation, not observations':selected==='2012-01'?'S-NPP starts 20 January · partial coverage':'Observed S-NPP record'}{layers.includes('modis')&&' · Aqua shown separately'}</div></div>
+    <div className="explorer-controls"><div className="explorer-heading"><Globe2 size={18}/><h1>Historical fire explorer</h1></div><div className="final-map-selection"><MapPin size={15}/><strong>{currentArea.label}</strong><span>·</span>{timeline.enabled?`On ${timeline.cutoff||'—'}`:monthName(selected)}</div><div className="final-provenance-note"><ShieldCheck size={14}/>{timeline.enabled?'Observed and simulated layers retain their provenance':selected<'2012-01'?'Synthetic VIIRS locations · simulation, not observations':selected==='2012-01'?'S-NPP starts 20 January · partial coverage':'Observed S-NPP record'}{layers.includes('modis')&&' · Aqua shown separately'}</div></div>
     <MapTimeline {...timeline}/>
     <div className="final-map-count"><strong>{fmt(visible.length)}</strong><span>visible points</span></div>
     <div className="final-map-legend" aria-label="Point provenance legend"><span><i style={{background:sensorColors.MODIS}}/>MODIS</span><span><i style={{background:sensorColors.VIIRS}}/>VIIRS</span><span><i className="synthetic"/>Simulated</span>{grid&&<span><i style={{background:sensorColors.mixed}}/>Both sensors</span>}<small>Display cells: 0.25°</small></div>
@@ -83,7 +84,7 @@ export default function FinalWorkspace(){
     </div>
     <div className="analysis-sidebar-foot"><Info size={13}/><span>Estimated monthly totals and simulated points are distinct. Accuracy is strongest at national monthly scale.</span></div>
    </aside>
-  </div>:tab==='validation'?<ValidationReport key={base} reports={reports} country={manifest.country}/>:tab==='simulation'?<SimulationReport reports={reports} manifest={manifest} base={base}/>:tab==='pipeline'?<FinalPipeline onLoad={loadRun}/>:tab==='method'?<MethodReport manifest={manifest}/>:<FinalDownloads manifest={manifest} base={base}/>}
+  </div>:tab==='forecast'?<ForecastPanel country="Malaysia" label="Malaysia"/>:tab==='validation'?<ValidationReport key={base} reports={reports} country={manifest.country}/>:tab==='simulation'?<SimulationReport reports={reports} manifest={manifest} base={base}/>:tab==='pipeline'?<FinalPipeline onLoad={loadRun}/>:tab==='method'?<MethodReport manifest={manifest}/>:<FinalDownloads manifest={manifest} base={base}/>}
   <input type="file" hidden accept=".json,.geojson,application/geo+json" ref={geoInput} onChange={importArea}/>
   {notice&&<div className="final-toast" role="status">{notice}<button aria-label="Dismiss historical notification" onClick={()=>setNotice('')}><X size={15}/></button></div>}
  </div>;
