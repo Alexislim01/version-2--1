@@ -26,4 +26,4 @@ Every folder has its own README.
 
 Large fire years tend to be under-estimated by about 15–24% (Malaysia). Predicted values are estimates, not observations.
 
-**In this repository:** the FIRMS input CSVs (1.5 GB) are not committed — `python code/main.py --download --country <Name>` fetches them into `raw_data/`. The 2003–2011 synthetic VIIRS point files are served to the website as monthly shards in `frontend/public/data/delivery/{Country}/synthetic/` (built by `scripts/add_synthetic_points.py`). The daily fire forecast runs from `forecast/` via `.github/workflows/forecast_daily.yml`.
+**In this repository:** everything is included — FIRMS input CSVs in `raw_data/`, results incl. the synthetic VIIRS point CSVs. The website serves the synthetic points as monthly shards in `frontend/public/data/delivery/{Country}/synthetic/` (built by `scripts/add_synthetic_points.py`). The daily fire forecast runs from `forecast/` via `.github/workflows/forecast_daily.yml`.
